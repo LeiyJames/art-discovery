@@ -404,11 +404,11 @@ const Gallery = () => {
                       }}
                     />
                     
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
+                    {/* Hover Overlay (Desktop) / Static Overlay (Mobile) */}
+                    <div className="absolute inset-0 bg-black/0 md:group-hover:bg-black/40 bg-black/40 md:bg-black/0 transition-colors duration-300" />
                     
-                    {/* Hover Content */}
-                    <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Hover Content (Desktop) / Static Content (Mobile) */}
+                    <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex justify-end space-x-2">
                         <div className="flex items-center space-x-1 bg-black/50 rounded-full px-2 py-1 text-white text-sm">
                           <Heart className="h-3 w-3" />
