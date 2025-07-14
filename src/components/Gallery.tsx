@@ -304,53 +304,64 @@ const Gallery = () => {
         {/* Enhanced Search and Filter Bar */}
         <div className="max-w-6xl mx-auto mb-8 sm:mb-12 animate-slide-up px-4">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 shadow-lg">
-            {/* Search Bar */}
-            <div className="relative mb-4 sm:mb-6">
-              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 sm:h-5 w-4 sm:w-5" />
-              <Input
-                placeholder="Search artworks, artists, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 sm:pl-12 pr-10 sm:pr-4 py-2 sm:py-3 text-base sm:text-lg bg-background/50 border-border/50 rounded-xl focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+            {/* Search Bar with Upload Button (Web View) */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4 sm:mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 sm:h-5 w-4 sm:w-5" />
+                <Input
+                  placeholder="Search artworks, artists, or tags..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 sm:pl-12 pr-10 sm:pr-4 py-2 sm:py-3 text-base sm:text-lg bg-background/50 border-border/50 rounded-xl focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              
+              {/* Upload Button (Web View - next to search bar) */}
+              <Button 
+                size="lg" 
+                className="hidden sm:flex bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+              >
+                <Upload className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                Upload Artwork
+              </Button>
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
-              {/* Filter Tags */}
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-sm font-medium text-muted-foreground mr-2">Filter by:</span>
+            {/* Filter Tags */}
+            <div className="flex flex-wrap gap-2 items-center mb-4">
+              <span className="text-sm font-medium text-muted-foreground mr-2">Filter by:</span>
+              <Button
+                variant={selectedTag === '' ? 'default' : 'secondary'}
+                onClick={() => setSelectedTag('')}
+                size="sm"
+                className="rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
+              >
+                All Tags
+              </Button>
+              {allTags.map(tag => (
                 <Button
-                  variant={selectedTag === '' ? 'default' : 'secondary'}
-                  onClick={() => setSelectedTag('')}
+                  key={tag}
+                  variant={selectedTag === tag ? 'default' : 'secondary'}
+                  onClick={() => setSelectedTag(tag)}
                   size="sm"
                   className="rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
                 >
-                  All Tags
+                  {tag}
                 </Button>
-                {allTags.map(tag => (
-                  <Button
-                    key={tag}
-                    variant={selectedTag === tag ? 'default' : 'secondary'}
-                    onClick={() => setSelectedTag(tag)}
-                    size="sm"
-                    className="rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
+              ))}
+            </div>
 
-              {/* Upload Button */}
+            {/* Upload Button (Mobile View - below filters, centered) */}
+            <div className="flex justify-center sm:hidden mb-4">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
