@@ -17,7 +17,7 @@ interface Artwork {
   height: number;
 }
 
-// Mock data for demonstration
+// Mock data with diverse artwork
 const mockArtworks: Artwork[] = [
   {
     id: '1',
@@ -45,11 +45,11 @@ const mockArtworks: Artwork[] = [
   },
   {
     id: '3',
-    title: 'Ethereal Botanics',
+    title: 'Mountain Bridge',
     artist: 'Emma Thompson',
-    description: 'Delicate botanical forms rendered in soft, dreamlike colors.',
-    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=650&fit=crop&crop=center',
-    tags: ['Nature', 'Botanical', 'Soft'],
+    description: 'A stunning concrete bridge overlooking waterfalls during golden hour.',
+    imageUrl: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=650&fit=crop&crop=center',
+    tags: ['Nature', 'Landscape', 'Architecture'],
     likes: 189,
     views: 987,
     width: 400,
@@ -57,11 +57,11 @@ const mockArtworks: Artwork[] = [
   },
   {
     id: '4',
-    title: 'Geometric Harmony',
+    title: 'Orange Blossoms',
     artist: 'Alex Kim',
-    description: 'Precision and beauty unite in this exploration of geometric forms.',
-    imageUrl: 'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&h=400&fit=crop&crop=center',
-    tags: ['Geometric', 'Minimal', 'Pattern'],
+    description: 'Delicate orange flowers captured in perfect natural lighting.',
+    imageUrl: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=400&fit=crop&crop=center',
+    tags: ['Flowers', 'Nature', 'Botanical'],
     likes: 334,
     views: 1654,
     width: 400,
@@ -69,27 +69,171 @@ const mockArtworks: Artwork[] = [
   },
   {
     id: '5',
-    title: 'Digital Landscape',
+    title: 'Mountain River',
     artist: 'Riley Park',
-    description: 'A futuristic interpretation of natural landscapes through digital media.',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=550&fit=crop&crop=center',
-    tags: ['Digital', 'Landscape', 'Futuristic'],
+    description: 'A serene river flowing between majestic mountains under cloudy skies.',
+    imageUrl: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=400&h=700&fit=crop&crop=center',
+    tags: ['Landscape', 'River', 'Mountains'],
     likes: 567,
     views: 2890,
+    width: 400,
+    height: 700
+  },
+  {
+    id: '6',
+    title: 'Pine Forest',
+    artist: 'Jordan Lee',
+    description: 'Towering pine trees creating a natural cathedral of green.',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&h=550&fit=crop&crop=center',
+    tags: ['Forest', 'Trees', 'Nature'],
+    likes: 298,
+    views: 1432,
     width: 400,
     height: 550
   },
   {
-    id: '6',
-    title: 'Warm Abstractions',
-    artist: 'Jordan Lee',
-    description: 'Warm colors flow together in this comforting abstract composition.',
-    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=700&fit=crop&crop=center',
-    tags: ['Abstract', 'Warm', 'Flow'],
-    likes: 298,
-    views: 1432,
+    id: '7',
+    title: 'Forest Light',
+    artist: 'Maya Singh',
+    description: 'Sunbeams filtering through dense forest canopy creating magical atmosphere.',
+    imageUrl: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400&h=600&fit=crop&crop=center',
+    tags: ['Forest', 'Light', 'Atmospheric'],
+    likes: 445,
+    views: 2156,
+    width: 400,
+    height: 600
+  },
+  {
+    id: '8',
+    title: 'Golden Forest',
+    artist: 'David Park',
+    description: 'Warm sunlight creating magical patterns through green leaves.',
+    imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&h=500&fit=crop&crop=center',
+    tags: ['Forest', 'Golden', 'Sunlight'],
+    likes: 378,
+    views: 1789,
+    width: 400,
+    height: 500
+  },
+  {
+    id: '9',
+    title: 'Sunrise Mountains',
+    artist: 'Lisa Wang',
+    description: 'Dramatic mountain landscape illuminated by golden sunrise rays.',
+    imageUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=650&fit=crop&crop=center',
+    tags: ['Mountains', 'Sunrise', 'Dramatic'],
+    likes: 512,
+    views: 2734,
+    width: 400,
+    height: 650
+  },
+  {
+    id: '10',
+    title: 'Starry Night',
+    artist: 'Carlos Martinez',
+    description: 'A breathtaking view of stars scattered across the night sky.',
+    imageUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=600&fit=crop&crop=center',
+    tags: ['Night', 'Stars', 'Sky'],
+    likes: 423,
+    views: 2001,
+    width: 400,
+    height: 600
+  },
+  {
+    id: '11',
+    title: 'Misty Peak',
+    artist: 'Anna Schmidt',
+    description: 'A foggy mountain summit shrouded in mysterious mist.',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
+    tags: ['Mountains', 'Fog', 'Mystery'],
+    likes: 356,
+    views: 1654,
+    width: 400,
+    height: 500
+  },
+  {
+    id: '12',
+    title: 'Ocean Wave',
+    artist: 'Tom Wilson',
+    description: 'Powerful ocean waves crashing at a pristine beach.',
+    imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=600&fit=crop&crop=center',
+    tags: ['Ocean', 'Waves', 'Beach'],
+    likes: 489,
+    views: 2345,
+    width: 400,
+    height: 600
+  },
+  {
+    id: '13',
+    title: 'Alpine Vista',
+    artist: 'Sophie Brown',
+    description: 'Panoramic view of snow-capped alpine peaks.',
+    imageUrl: 'https://images.unsplash.com/photo-1458668383970-8ddd3927deed?w=400&h=700&fit=crop&crop=center',
+    tags: ['Alps', 'Snow', 'Panoramic'],
+    likes: 612,
+    views: 3102,
     width: 400,
     height: 700
+  },
+  {
+    id: '14',
+    title: 'Rocky Canyon',
+    artist: 'Jake Thompson',
+    description: 'A winding river carved through ancient rock formations.',
+    imageUrl: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=400&h=450&fit=crop&crop=center',
+    tags: ['Canyon', 'River', 'Rock'],
+    likes: 267,
+    views: 1456,
+    width: 400,
+    height: 450
+  },
+  {
+    id: '15',
+    title: 'Desert Dunes',
+    artist: 'Mia Johnson',
+    description: 'Endless sand dunes creating mesmerizing patterns.',
+    imageUrl: 'https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?w=400&h=500&fit=crop&crop=center',
+    tags: ['Desert', 'Sand', 'Patterns'],
+    likes: 334,
+    views: 1789,
+    width: 400,
+    height: 500
+  },
+  {
+    id: '16',
+    title: 'Forest Sunbeam',
+    artist: 'Ryan Davis',
+    description: 'Dramatic sunbeam piercing through dense forest.',
+    imageUrl: 'https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?w=400&h=600&fit=crop&crop=center',
+    tags: ['Forest', 'Sunbeam', 'Dramatic'],
+    likes: 445,
+    views: 2234,
+    width: 400,
+    height: 600
+  },
+  {
+    id: '17',
+    title: 'Twilight Forest',
+    artist: 'Elena Garcia',
+    description: 'Golden lights dancing between trees at twilight.',
+    imageUrl: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400&h=550&fit=crop&crop=center',
+    tags: ['Forest', 'Twilight', 'Golden'],
+    likes: 389,
+    views: 1923,
+    width: 400,
+    height: 550
+  },
+  {
+    id: '18',
+    title: 'Lake Reflection',
+    artist: 'Michael Chang',
+    description: 'Perfect reflections of trees in a crystal-clear mountain lake.',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=650&fit=crop&crop=center',
+    tags: ['Lake', 'Reflection', 'Trees'],
+    likes: 523,
+    views: 2678,
+    width: 400,
+    height: 650
   }
 ];
 
@@ -124,19 +268,25 @@ const Gallery = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-muted rounded-lg overflow-hidden animate-pulse"
-              style={{ height: `${Math.random() * 200 + 300}px` }}
-            >
-              <div className="w-full h-full bg-muted-foreground/20" />
-            </div>
-          ))}
+      <section className="min-h-screen py-12 bg-background">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12 animate-fade-in">
+            <h2 className="text-4xl font-light mb-4">Gallery</h2>
+            <p className="text-xl text-muted-foreground">Loading amazing artwork...</p>
+          </div>
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-6 space-y-6 px-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div
+                key={i}
+                className="break-inside-avoid bg-muted rounded-lg overflow-hidden animate-pulse"
+                style={{ height: `${Math.random() * 300 + 200}px` }}
+              >
+                <div className="w-full h-full bg-muted-foreground/20" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -236,6 +386,11 @@ const Gallery = () => {
                       src={artwork.imageUrl}
                       alt={artwork.title}
                       className="w-full h-auto object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop`;
+                      }}
                     />
                     
                     {/* Hover Overlay */}
@@ -270,6 +425,11 @@ const Gallery = () => {
                       src={artwork.imageUrl}
                       alt={artwork.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop`;
+                      }}
                     />
                   </div>
                   
