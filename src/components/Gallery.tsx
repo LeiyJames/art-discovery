@@ -242,6 +242,7 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [likedArtworks, setLikedArtworks] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Simulate loading
@@ -265,6 +266,40 @@ const Gallery = () => {
   });
 
   const allTags = Array.from(new Set(artworks.flatMap(artwork => artwork.tags)));
+
+  const handleLike = (artworkId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent dialog from opening
+    setLikedArtworks(prev => {
+      const newLiked = new Set(prev);
+      if (newLiked.has(artworkId)) {
+        newLiked.delete(artworkId);
+      } else {
+        newLiked.add(artworkId);
+      }
+      return newLiked;
+    });
+
+    // Update the artwork likes count
+    setArtworks(prev => prev.map(artwork => 
+      artwork.id === artworkId 
+        ? { 
+            ...artwork, 
+            likes: likedArtworks.has(artworkId) ? artwork.likes - 1 : artwork.likes + 1 
+          }
+        : artwork
+    ));
+  };
+
+  const handleUpload = () => {
+    // Navigate to upload section (if exists) or show upload dialog
+    const uploadSection = document.getElementById('upload');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // For now, just show an alert - in a real app, this would open an upload modal
+      alert('Upload functionality would open here! For demo purposes, you can scroll to the upload section if it exists.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -328,6 +363,7 @@ const Gallery = () => {
               
               {/* Upload Button (Web View - next to search bar) */}
               <Button 
+                onClick={handleUpload}
                 size="lg" 
                 className="hidden sm:flex bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
               >
@@ -363,6 +399,7 @@ const Gallery = () => {
             {/* Upload Button (Mobile View - below filters, centered) */}
             <div className="flex justify-center sm:hidden mb-4">
               <Button 
+                onClick={handleUpload}
                 size="lg" 
                 className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
               >
@@ -410,10 +447,13 @@ const Gallery = () => {
                     {/* Hover Content (Desktop) / Static Content (Mobile) */}
                     <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex justify-end space-x-2">
-                        <div className="flex items-center space-x-1 bg-black/50 rounded-full px-2 py-1 text-white text-sm">
-                          <Heart className="h-3 w-3" />
+                        <button 
+                          onClick={(e) => handleLike(artwork.id, e)}
+                          className="flex items-center space-x-1 bg-black/50 rounded-full px-2 py-1 text-white text-sm hover:bg-black/70 transition-colors cursor-pointer"
+                        >
+                          <Heart className={`h-3 w-3 ${likedArtworks.has(artwork.id) ? 'fill-red-500 text-red-500' : ''}`} />
                           <span>{artwork.likes}</span>
-                        </div>
+                        </button>
                         <div className="flex items-center space-x-1 bg-black/50 rounded-full px-2 py-1 text-white text-sm">
                           <Eye className="h-3 w-3" />
                           <span>{artwork.views}</span>
