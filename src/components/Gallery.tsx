@@ -151,42 +151,75 @@ const Gallery = () => {
           </p>
         </div>
 
-        {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8 max-w-4xl mx-auto animate-slide-up">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search artworks, artists, or tags..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={selectedTag === '' ? 'default' : 'outline'}
-              onClick={() => setSelectedTag('')}
-              size="sm"
-            >
-              All
-            </Button>
-            {allTags.map(tag => (
-              <Button
-                key={tag}
-                variant={selectedTag === tag ? 'default' : 'outline'}
-                onClick={() => setSelectedTag(tag)}
-                size="sm"
-              >
-                {tag}
-              </Button>
-            ))}
-          </div>
+        {/* Enhanced Search and Filter Bar */}
+        <div className="max-w-6xl mx-auto mb-12 animate-slide-up">
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
+            {/* Search Bar */}
+            <div className="relative mb-6">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                placeholder="Search artworks, artists, or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 pr-4 py-3 text-lg bg-background/50 border-border/50 rounded-xl focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
-          <Button variant="outline" size="sm" className="md:w-auto w-full">
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Art
-          </Button>
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              {/* Filter Tags */}
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-sm font-medium text-muted-foreground mr-2">Filter by:</span>
+                <Button
+                  variant={selectedTag === '' ? 'default' : 'secondary'}
+                  onClick={() => setSelectedTag('')}
+                  size="sm"
+                  className="rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
+                >
+                  All Tags
+                </Button>
+                {allTags.map(tag => (
+                  <Button
+                    key={tag}
+                    variant={selectedTag === tag ? 'default' : 'secondary'}
+                    onClick={() => setSelectedTag(tag)}
+                    size="sm"
+                    className="rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Upload Button */}
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+              >
+                <Upload className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                Upload Artwork
+              </Button>
+            </div>
+
+            {/* Results Count */}
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <p className="text-sm text-muted-foreground">
+                {filteredArtworks.length === artworks.length 
+                  ? `Showing all ${artworks.length} artworks`
+                  : `Found ${filteredArtworks.length} of ${artworks.length} artworks`
+                }
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Gallery Grid */}
