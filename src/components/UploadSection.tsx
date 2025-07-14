@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useCreateArtwork } from '@/hooks/useArtworks';
 
 interface FilePreview {
   file: File;
@@ -13,7 +14,11 @@ interface FilePreview {
   id: string;
 }
 
-const UploadSection = () => {
+interface UploadSectionProps {
+  onSuccess?: () => void;
+}
+
+const UploadSection = ({ onSuccess }: UploadSectionProps) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [title, setTitle] = useState('');
@@ -21,8 +26,8 @@ const UploadSection = () => {
   const [artist, setArtist] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const createArtwork = useCreateArtwork();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -50,50 +55,53 @@ const UploadSection = () => {
   };
 
   const processFiles = (newFiles: File[]) => {
-    const validFiles = newFiles.filter(file => {
-      const isValidType = file.type.startsWith('image/');
-      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
-      
-      if (!isValidType) {
-        toast({
-          title: "Invalid file type",
-          description: `${file.name} is not a valid image file.`,
-          variant: "destructive"
-        });
-      }
-      
-      if (!isValidSize) {
+    const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) {
+      toast({
+        title: "Invalid files",
+        description: "Please select image files only.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (imageFiles.length > 5) {
+      toast({
+        title: "Too many files",
+        description: "Please select up to 5 images at a time.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    imageFiles.forEach(file => {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
         toast({
           title: "File too large",
-          description: `${file.name} exceeds the 10MB limit.`,
-          variant: "destructive"
+          description: `${file.name} is larger than 10MB. Please choose a smaller file.`,
+          variant: "destructive",
         });
+        return;
       }
-      
-      return isValidType && isValidSize;
-    });
 
-    const filePromises = validFiles.map(file => {
-      return new Promise<FilePreview>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve({
-            file,
-            preview: e.target?.result as string,
-            id: Math.random().toString(36).substr(2, 9)
-          });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const preview = e.target?.result as string;
+        const newFilePreview: FilePreview = {
+          file,
+          preview,
+          id: Math.random().toString(36).substr(2, 9)
         };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(filePromises).then(newPreviews => {
-      setFiles(prev => [...prev, ...newPreviews]);
+        
+        setFiles(prev => [...prev, newFilePreview]);
+      };
+      reader.readAsDataURL(file);
     });
   };
 
   const removeFile = (id: string) => {
-    setFiles(prev => prev.filter(f => f.id !== id));
+    setFiles(prev => prev.filter(file => file.id !== id));
   };
 
   const addTag = () => {
@@ -107,234 +115,237 @@ const UploadSection = () => {
     setTags(prev => prev.filter(tag => tag !== tagToRemove));
   };
 
+  const resetForm = () => {
+    setFiles([]);
+    setTitle('');
+    setDescription('');
+    setArtist('');
+    setTags([]);
+    setNewTag('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (files.length === 0) {
+    if (!title.trim() || !artist.trim()) {
       toast({
-        title: "No files selected",
-        description: "Please select at least one image to upload.",
-        variant: "destructive"
+        title: "Missing information",
+        description: "Please provide both title and artist name.",
+        variant: "destructive",
       });
       return;
     }
 
-    setIsUploading(true);
-    
-    // Simulate upload process
+    if (files.length === 0) {
+      toast({
+        title: "No image selected",
+        description: "Please select at least one image to upload.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // For demo purposes, we'll use a placeholder image URL
+      // In a real implementation, you would upload the file to Supabase Storage first
+      const file = files[0];
+      const img = new Image();
       
-      toast({
-        title: "Upload successful!",
-        description: `${files.length} artwork(s) uploaded successfully.`,
-      });
+      img.onload = async () => {
+        const artworkData = {
+          title: title.trim(),
+          artist: artist.trim(),
+          description: description.trim(),
+          image_url: file.preview, // In production, this would be the Supabase Storage URL
+          tags,
+          width: img.width,
+          height: img.height,
+        };
+
+        await createArtwork.mutateAsync(artworkData);
+        resetForm();
+        onSuccess?.();
+      };
       
-      // Reset form
-      setFiles([]);
-      setTitle('');
-      setDescription('');
-      setArtist('');
-      setTags([]);
-      setNewTag('');
+      img.src = file.preview;
     } catch (error) {
-      toast({
-        title: "Upload failed",
-        description: "There was an error uploading your artwork. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUploading(false);
+      console.error('Upload error:', error);
     }
   };
 
   return (
-    <section id="upload" className="py-12 bg-secondary/20">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <div className="text-center mb-8 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-light mb-4">Share Your Art</h2>
-          <p className="text-xl text-muted-foreground">
-            Upload your artwork and share it with the world
-          </p>
-        </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Upload Your Artwork</h2>
+        <p className="text-gray-600">Share your creativity with the world</p>
+      </div>
 
-        {/* Notice for Supabase Integration */}
-        <Card className="mb-8 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-          <CardContent className="flex items-center space-x-3 p-4">
-            <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            <p className="text-amber-800 dark:text-amber-200">
-              <strong>Note:</strong> To enable file uploads and save artwork data, please connect your project to Supabase using the integration button in the top-right corner.
-            </p>
-          </CardContent>
-        </Card>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* File Upload Area */}
-          <Card className="animate-slide-up">
-            <CardHeader>
-              <CardTitle>Upload Images</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  isDragOver
-                    ? 'border-primary bg-primary/5'
-                    : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-                }`}
-              >
-                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">
-                  Drag & drop your images here
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  or click to browse files (JPG, PNG, WebP - max 10MB each)
-                </p>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* File Upload Area */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="w-5 h-5" />
+              Upload Images
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                isDragOver 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-300 hover:border-gray-400'
+              }`}
+            >
+              <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-700 mb-2">
+                Drag & drop your images here
+              </p>
+              <p className="text-gray-500 mb-4">or</p>
+              <label className="inline-block">
                 <input
                   type="file"
                   multiple
                   accept="image/*"
                   onChange={handleFileSelect}
                   className="hidden"
-                  id="file-upload"
                 />
                 <Button type="button" variant="outline" asChild>
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <ImageIcon className="h-4 w-4 mr-2" />
-                    Choose Files
-                  </label>
+                  <span className="cursor-pointer">Choose Files</span>
                 </Button>
+              </label>
+              <p className="text-xs text-gray-500 mt-4">
+                PNG, JPG, GIF up to 10MB each. Maximum 5 files.
+              </p>
+            </div>
+
+            {/* File Previews */}
+            {files.length > 0 && (
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {files.map((file) => (
+                  <div key={file.id} className="relative group">
+                    <img
+                      src={file.preview}
+                      alt="Preview"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFile(file.id)}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <p className="text-xs text-gray-600 mt-1 truncate">
+                      {file.file.name}
+                    </p>
+                  </div>
+                ))}
               </div>
+            )}
+          </CardContent>
+        </Card>
 
-              {/* File Previews */}
-              {files.length > 0 && (
-                <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {files.map((filePreview) => (
-                    <div key={filePreview.id} className="relative group">
-                      <img
-                        src={filePreview.preview}
-                        alt="Preview"
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeFile(filePreview.id)}
-                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Artwork Details */}
-          <Card className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <CardHeader>
-              <CardTitle>Artwork Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium mb-2">
-                    Title
-                  </label>
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter artwork title"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="artist" className="block text-sm font-medium mb-2">
-                    Artist Name
-                  </label>
-                  <Input
-                    id="artist"
-                    value={artist}
-                    onChange={(e) => setArtist(e.target.value)}
-                    placeholder="Enter artist name"
-                    required
-                  />
-                </div>
-              </div>
-
+        {/* Artwork Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Artwork Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="description" className="block text-sm font-medium mb-2">
-                  Description
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title *
                 </label>
-                <Textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your artwork..."
-                  rows={4}
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Give your artwork a title"
                   required
                 />
               </div>
-
-              {/* Tags */}
               <div>
-                <label className="block text-sm font-medium mb-2">Tags</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="Add a tag"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  />
-                  <Button type="button" onClick={addTag} variant="outline">
-                    Add Tag
-                  </Button>
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Artist *
+                </label>
+                <Input
+                  value={artist}
+                  onChange={(e) => setArtist(e.target.value)}
+                  placeholder="Your name or artist name"
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Submit Button */}
-          <div className="text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isUploading || files.length === 0}
-              className="px-8"
-            >
-              {isUploading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Artwork
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </section>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your artwork, inspiration, or technique"
+                rows={4}
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tags
+              </label>
+              <div className="flex gap-2 mb-2">
+                <Input
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  placeholder="Add a tag"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addTag();
+                    }
+                  }}
+                />
+                <Button type="button" onClick={addTag} variant="outline">
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="cursor-pointer">
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="ml-1 hover:text-red-500"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Submit Button */}
+        <div className="flex justify-end space-x-4">
+          <Button type="button" variant="outline" onClick={resetForm}>
+            Reset
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={createArtwork.isPending || files.length === 0}
+            className="min-w-32"
+          >
+            {createArtwork.isPending ? 'Uploading...' : 'Upload Artwork'}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 
