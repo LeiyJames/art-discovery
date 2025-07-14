@@ -2,39 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Art Canvas Explore - Design System
+All colors MUST be HSL for proper theming.
 */
 
 @layer base {
   :root {
+    /* Core brand colors - sophisticated art gallery palette */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 240 10% 3.9%;
+    
+    /* Card and surface colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 240 10% 3.9%;
+    
+    /* Popover colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --popover-foreground: 240 10% 3.9%;
+    
+    /* Primary - deep charcoal for elegance */
+    --primary: 240 9% 12%;
+    --primary-foreground: 0 0% 98%;
+    
+    /* Secondary - warm cream for subtle contrast */
+    --secondary: 45 23% 95%;
+    --secondary-foreground: 240 9% 12%;
+    
+    /* Muted - soft grays for subtle elements */
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    
+    /* Accent - warm beige for highlights */
+    --accent: 35 20% 92%;
+    --accent-foreground: 240 9% 12%;
+    
+    /* Art-specific colors */
+    --gallery-hover: 240 4.8% 95.9%;
+    --overlay: 240 10% 3.9%;
+    --overlay-light: 0 0% 100%;
+    
+    /* Destructive colors */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Border and input colors */
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 9% 12%;
 
     --radius: 0.5rem;
 
@@ -56,33 +70,47 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
+    /* Dark mode - sophisticated gallery aesthetics */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    /* Card and surface colors in dark mode */
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    
+    /* Popover colors in dark mode */
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    /* Primary in dark mode - lighter for contrast */
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 3.9%;
+    
+    /* Secondary - dark warm tone */
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+    
+    /* Muted - dark grays */
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    /* Accent - subtle warm highlight */
+    --accent: 240 6% 15%;
+    --accent-foreground: 0 0% 98%;
+    
+    /* Art-specific dark colors */
+    --gallery-hover: 240 6% 15%;
+    --overlay: 0 0% 98%;
+    --overlay-light: 240 10% 3.9%;
+    
+    /* Destructive in dark mode */
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Border and input in dark mode */
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 240 9% 12%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +128,23 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter antialiased;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
   }
 }
