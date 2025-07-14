@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { X, Upload, Image } from 'lucide-react';
 
 interface Artwork {
   id: string;
@@ -35,6 +36,9 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
     height: 600,
     tags: [] as string[]
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
@@ -48,6 +52,7 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
         height: artwork.height,
         tags: [...artwork.tags]
       });
+      setPreviewUrl(artwork.imageUrl);
     } else {
       setFormData({
         title: '',
@@ -58,6 +63,8 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
         height: 600,
         tags: []
       });
+      setPreviewUrl('');
+      setSelectedFile(null);
     }
   }, [artwork]);
 
@@ -67,6 +74,27 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
       ...prev,
       [name]: name === 'width' || name === 'height' ? parseInt(value) || 0 : value
     }));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setPreviewUrl(result);
+        // For demo purposes, we'll set the imageUrl to the base64 data
+        // In a real app with Supabase, you'd upload to storage and get a URL
+        setFormData(prev => ({
+          ...prev,
+          imageUrl: result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -92,6 +120,8 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // In a real app with Supabase, you would upload the file to storage here
+    // and then save the storage URL in the database
     onSave(formData);
   };
 
@@ -137,31 +167,92 @@ const ArtworkForm = ({ artwork, onSave, onCancel }: ArtworkFormProps) => {
         />
       </div>
 
-      {/* Image URL */}
+      {/* Image Upload */}
       <div className="space-y-2">
-        <Label htmlFor="imageUrl">Image URL *</Label>
-        <Input
-          id="imageUrl"
-          name="imageUrl"
-          type="url"
-          value={formData.imageUrl}
-          onChange={handleInputChange}
-          placeholder="https://example.com/image.jpg"
-          required
-        />
-        {formData.imageUrl && (
-          <div className="mt-2">
-            <img
-              src={formData.imageUrl}
-              alt="Preview"
-              className="max-w-xs max-h-48 object-cover rounded border"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
-          </div>
-        )}
+        <Label>Artwork Image *</Label>
+        
+        {/* File Upload Area */}
+        <Card className="border-dashed border-2 border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+          <CardContent className="p-6">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              {previewUrl ? (
+                <div className="relative">
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="max-w-xs max-h-48 object-cover rounded border"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setPreviewUrl('');
+                      setSelectedFile(null);
+                      setFormData(prev => ({ ...prev, imageUrl: '' }));
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <Image className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Drop your image here, or click to browse
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG, GIF up to 10MB
+                  </p>
+                </div>
+              )}
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="image-upload"
+              />
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                {previewUrl ? 'Change Image' : 'Upload Image'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Alternative: URL Input */}
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">Or enter image URL</Label>
+          <Input
+            name="imageUrl"
+            type="url"
+            value={formData.imageUrl}
+            onChange={(e) => {
+              handleInputChange(e);
+              if (e.target.value) {
+                setPreviewUrl(e.target.value);
+                setSelectedFile(null);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = '';
+                }
+              }
+            }}
+            placeholder="https://example.com/image.jpg"
+          />
+        </div>
       </div>
 
       {/* Dimensions */}
