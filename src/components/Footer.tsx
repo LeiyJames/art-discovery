@@ -8,7 +8,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Art Canvas Explore
+              Art
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Discover and share amazing artwork from talented artists worldwide. A platform for creativity and inspiration.
@@ -90,7 +90,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
           <p className="text-muted-foreground text-sm text-center sm:text-left">
-            © 2024 Art Canvas Explore. Made with <Heart className="inline h-4 w-4 text-red-500 mx-1" /> for artists worldwide.
+            © 2024 Art. Made with <Heart className="inline h-4 w-4 text-red-500 mx-1" /> for artists worldwide.
           </p>
           <p className="text-muted-foreground text-sm">
             Built with React & Tailwind CSS

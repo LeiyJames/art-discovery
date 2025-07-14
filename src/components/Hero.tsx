@@ -32,7 +32,7 @@ const Hero = () => {
         {/* Header */}
         <header className="flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-semibold tracking-wide">
-            Art Canvas Explore
+            Art
           </h1>
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <a href="#gallery" className="hover:text-white/80 transition-colors text-sm lg:text-base">
