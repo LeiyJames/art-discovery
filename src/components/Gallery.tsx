@@ -144,29 +144,29 @@ const Gallery = () => {
     <section id="gallery" className="min-h-screen py-12 bg-background">
       <div className="container mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-light mb-4">Gallery</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in px-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4">Gallery</h2>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover amazing artwork from talented artists worldwide
           </p>
         </div>
 
         {/* Enhanced Search and Filter Bar */}
-        <div className="max-w-6xl mx-auto mb-12 animate-slide-up">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
+        <div className="max-w-6xl mx-auto mb-8 sm:mb-12 animate-slide-up px-4">
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 shadow-lg">
             {/* Search Bar */}
-            <div className="relative mb-6">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+            <div className="relative mb-4 sm:mb-6">
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 sm:h-5 w-4 sm:w-5" />
               <Input
                 placeholder="Search artworks, artists, or tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 text-lg bg-background/50 border-border/50 rounded-xl focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
+                className="pl-10 sm:pl-12 pr-10 sm:pr-4 py-2 sm:py-3 text-base sm:text-lg bg-background/50 border-border/50 rounded-xl focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -175,7 +175,7 @@ const Gallery = () => {
               )}
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
               {/* Filter Tags */}
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm font-medium text-muted-foreground mr-2">Filter by:</span>
@@ -223,7 +223,7 @@ const Gallery = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-4 sm:gap-6 space-y-4 sm:space-y-6 px-4">
           {filteredArtworks.map((artwork, index) => (
             <Dialog key={artwork.id}>
               <DialogTrigger asChild>
@@ -263,9 +263,9 @@ const Gallery = () => {
                 </div>
               </DialogTrigger>
               
-              <DialogContent className="max-w-4xl w-full p-0">
-                <div className="grid md:grid-cols-2 gap-0">
-                  <div className="relative">
+              <DialogContent className="max-w-6xl w-[95vw] sm:w-full p-0 max-h-[90vh] overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-full">
+                  <div className="relative h-64 sm:h-80 md:h-full">
                     <img
                       src={artwork.imageUrl}
                       alt={artwork.title}
@@ -273,13 +273,13 @@ const Gallery = () => {
                     />
                   </div>
                   
-                  <div className="p-6 space-y-4">
+                  <div className="p-4 sm:p-6 space-y-4 overflow-y-auto">
                     <div>
-                      <h3 className="text-2xl font-semibold mb-2">{artwork.title}</h3>
-                      <p className="text-muted-foreground text-lg">by {artwork.artist}</p>
+                      <h3 className="text-xl sm:text-2xl font-semibold mb-2">{artwork.title}</h3>
+                      <p className="text-muted-foreground text-base sm:text-lg">by {artwork.artist}</p>
                     </div>
                     
-                    <p className="text-foreground leading-relaxed">{artwork.description}</p>
+                    <p className="text-foreground leading-relaxed text-sm sm:text-base">{artwork.description}</p>
                     
                     <div className="flex flex-wrap gap-2">
                       {artwork.tags.map(tag => (
@@ -292,14 +292,14 @@ const Gallery = () => {
                       ))}
                     </div>
                     
-                    <div className="flex items-center space-x-6 pt-4 border-t">
+                    <div className="flex items-center space-x-4 sm:space-x-6 pt-4 border-t">
                       <div className="flex items-center space-x-2">
-                        <Heart className="h-5 w-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">{artwork.likes} likes</span>
+                        <Heart className="h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground" />
+                        <span className="text-muted-foreground text-sm sm:text-base">{artwork.likes} likes</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Eye className="h-5 w-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">{artwork.views} views</span>
+                        <Eye className="h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground" />
+                        <span className="text-muted-foreground text-sm sm:text-base">{artwork.views} views</span>
                       </div>
                     </div>
                   </div>

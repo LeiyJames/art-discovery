@@ -1,13 +1,13 @@
 import Hero from '@/components/Hero';
 import Gallery from '@/components/Gallery';
-import UploadSection from '@/components/UploadSection';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Hero />
       <Gallery />
-      <UploadSection />
+      <Footer />
     </div>
   );
 };

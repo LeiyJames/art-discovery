@@ -28,40 +28,40 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-between p-6 text-white">
+      <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-6 lg:p-8 text-white">
         {/* Header */}
         <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-wide">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-wide">
             Art Canvas Explore
           </h1>
-          <nav className="hidden md:flex space-x-8">
-            <a href="#gallery" className="hover:text-white/80 transition-colors">
+          <nav className="hidden md:flex space-x-4 lg:space-x-8">
+            <a href="#gallery" className="hover:text-white/80 transition-colors text-sm lg:text-base">
               Gallery
             </a>
-            <a href="#explore" className="hover:text-white/80 transition-colors">
+            <a href="#explore" className="hover:text-white/80 transition-colors text-sm lg:text-base">
               Explore
             </a>
-            <a href="#upload" className="hover:text-white/80 transition-colors">
+            <a href="#upload" className="hover:text-white/80 transition-colors text-sm lg:text-base">
               Upload
             </a>
           </nav>
         </header>
 
         {/* Hero Content */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center max-w-4xl mx-auto animate-fade-in">
-            <h2 className="text-5xl md:text-7xl font-light mb-6 leading-tight">
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center max-w-5xl mx-auto animate-fade-in">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-light mb-4 sm:mb-6 leading-tight">
               Discover
               <span className="block font-semibold">
                 Extraordinary Art
               </span>
             </h2>
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
               Explore a curated collection of stunning artwork from talented artists around the world
             </p>
             <Button 
               size="lg" 
-              className="bg-white text-black hover:bg-white/90 text-lg px-8 py-6 rounded-full font-medium transition-all duration-300 hover:scale-105"
+              className="bg-white text-black hover:bg-white/90 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-full font-medium transition-all duration-300 hover:scale-105"
             >
               Explore Gallery
             </Button>
@@ -69,11 +69,11 @@ const Hero = () => {
         </div>
 
         {/* Featured Artwork Info */}
-        <div className="flex items-end justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between space-y-4 sm:space-y-0">
           <div className="animate-slide-up">
-            <p className="text-sm text-white/70 mb-2">Featured Artwork</p>
-            <h3 className="text-xl font-medium mb-1">Flowing Abstractions</h3>
-            <p className="text-white/80">by Digital Artist</p>
+            <p className="text-xs sm:text-sm text-white/70 mb-2">Featured Artwork</p>
+            <h3 className="text-lg sm:text-xl font-medium mb-1">Flowing Abstractions</h3>
+            <p className="text-sm sm:text-base text-white/80">by Digital Artist</p>
           </div>
           
           {/* Scroll Indicator */}
