@@ -1,8 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Upload, Heart, Eye } from 'lucide-react';
+import { Search, Filter, Upload, Heart, Eye, Download, Share2, MessageCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+
+interface Comment {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: Date;
+}
 
 interface Artwork {
   id: string;
@@ -15,6 +24,7 @@ interface Artwork {
   views: number;
   width: number;
   height: number;
+  comments?: Comment[];
 }
 
 // Mock data with diverse artwork
@@ -243,6 +253,7 @@ const Gallery = () => {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [likedArtworks, setLikedArtworks] = useState<Set<string>>(new Set());
+  const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     // Simulate loading
@@ -298,6 +309,70 @@ const Gallery = () => {
     } else {
       // For now, just show an alert - in a real app, this would open an upload modal
       alert('Upload functionality would open here! For demo purposes, you can scroll to the upload section if it exists.');
+    }
+  };
+
+  const handleAddComment = (artworkId: string) => {
+    const comment = newComment[artworkId]?.trim();
+    if (!comment) return;
+
+    const newCommentObj: Comment = {
+      id: Date.now().toString(),
+      author: 'Anonymous User', // In a real app, this would be the logged-in user
+      content: comment,
+      timestamp: new Date()
+    };
+
+    setArtworks(prev => prev.map(artwork => 
+      artwork.id === artworkId 
+        ? { 
+            ...artwork, 
+            comments: [...(artwork.comments || []), newCommentObj]
+          }
+        : artwork
+    ));
+
+    setNewComment(prev => ({ ...prev, [artworkId]: '' }));
+  };
+
+  const handleDownload = async (artwork: Artwork) => {
+    try {
+      const response = await fetch(artwork.imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${artwork.title.replace(/\s+/g, '_')}_by_${artwork.artist.replace(/\s+/g, '_')}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Download failed. Please try again.');
+    }
+  };
+
+  const handleShare = (artwork: Artwork, platform: string) => {
+    const shareUrl = window.location.href;
+    const shareText = `Check out "${artwork.title}" by ${artwork.artist}`;
+    
+    const shareUrls = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`,
+      copy: shareUrl
+    };
+
+    if (platform === 'copy') {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy link');
+      });
+    } else {
+      window.open(shareUrls[platform as keyof typeof shareUrls], '_blank');
     }
   };
 
@@ -511,6 +586,101 @@ const Gallery = () => {
                       <div className="flex items-center space-x-2">
                         <Eye className="h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground" />
                         <span className="text-muted-foreground text-sm sm:text-base">{artwork.views} views</span>
+                      </div>
+                    </div>
+
+                    {/* Download and Share Actions */}
+                    <Separator />
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm text-muted-foreground">Actions</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          onClick={() => handleDownload(artwork)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Download className="h-4 w-4" />
+                          Download
+                        </Button>
+                        <Button
+                          onClick={() => handleShare(artwork, 'twitter')}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Twitter
+                        </Button>
+                        <Button
+                          onClick={() => handleShare(artwork, 'facebook')}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Facebook
+                        </Button>
+                        <Button
+                          onClick={() => handleShare(artwork, 'copy')}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Copy Link
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Comments Section */}
+                    <Separator />
+                    <div className="space-y-4">
+                      <h4 className="font-medium flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4" />
+                        Comments ({artwork.comments?.length || 0})
+                      </h4>
+                      
+                      {/* Add Comment */}
+                      <div className="space-y-2">
+                        <Textarea
+                          placeholder="Add a comment..."
+                          value={newComment[artwork.id] || ''}
+                          onChange={(e) => setNewComment(prev => ({ ...prev, [artwork.id]: e.target.value }))}
+                          className="min-h-[80px] resize-none"
+                        />
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => handleAddComment(artwork.id)}
+                            disabled={!newComment[artwork.id]?.trim()}
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
+                            <Send className="h-4 w-4" />
+                            Post Comment
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Comments List */}
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {artwork.comments?.length ? (
+                          artwork.comments.map((comment) => (
+                            <div key={comment.id} className="bg-muted/50 rounded-lg p-3 space-y-1">
+                              <div className="flex justify-between items-start">
+                                <span className="font-medium text-sm">{comment.author}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {comment.timestamp.toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-sm text-foreground">{comment.content}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            No comments yet. Be the first to comment!
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
